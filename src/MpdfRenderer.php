@@ -106,7 +106,7 @@ class MpdfRenderer implements PdfRenderer
         $mpdf = $this->createMpdf($options);
 
         foreach ($this->collectCss($options) as $css) {
-            $mpdf->WriteHTML($css, HTMLParserMode::HEADER_CSS);
+            $mpdf->WriteHTML($this->namedPageSizes($css), HTMLParserMode::HEADER_CSS);
         }
 
         if ($options['local_urls'] ?? true) {
@@ -115,6 +115,7 @@ class MpdfRenderer implements PdfRenderer
         if (!empty($options['keep_together'])) {
             $html = $this->keepShortBlocksTogether($html, (int) $options['keep_together']);
         }
+        $html = $this->namedPageSizes($html);
         $this->extend('updateHtml', $html, $options);
 
         $mpdf->WriteHTML($html);
@@ -268,6 +269,43 @@ class MpdfRenderer implements PdfRenderer
         return preg_replace_callback('/<link\b[^>]*>/i', function (array $tag) use ($replace) {
             return preg_replace_callback('/\b(href)\s*=\s*(["\'])(.*?)\2/i', $replace, $tag[0]);
         }, $html);
+    }
+
+    /**
+     * Rewrites named page sizes in @page rules (`size: A4`, `size: A4 landscape`)
+     * to mPDF's `sheet-size: A4` / `sheet-size: A4-L`. mPDF only understands
+     * lengths, auto, portrait and landscape for `size`; a named size, as usual
+     * in stylesheets written for browsers, makes it produce hundreds of empty
+     * pages.
+     */
+    public function namedPageSizes(string $css): string
+    {
+        return preg_replace_callback('/@page\b[^{]*\{[^}]*\}/i', function (array $rule): string {
+            return preg_replace_callback(
+                '/(?<![-\w])size\s*:\s*([^;}]+?)\s*(?=;|\}|$)/i',
+                function (array $m): string {
+                    $tokens = preg_split('/\s+/', strtolower(trim($m[1]))) ?: [];
+                    $named = null;
+                    $landscape = false;
+                    foreach ($tokens as $token) {
+                        if ($token === 'landscape') {
+                            $landscape = true;
+                        } elseif ($token === 'portrait') {
+                            continue;
+                        } elseif ($token === 'auto' || preg_match('/^[\d.]/', $token)) {
+                            return $m[0];
+                        } else {
+                            $named = $token;
+                        }
+                    }
+                    if ($named === null) {
+                        return $m[0];
+                    }
+                    return 'sheet-size: ' . strtoupper($named) . ($landscape ? '-L' : '');
+                },
+                $rule[0]
+            ) ?? $rule[0];
+        }, $css) ?? $css;
     }
 
     /**

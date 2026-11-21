@@ -67,7 +67,9 @@ Options (YAML profile or per call):
 ## Templates
 
 mPDF supports a [CSS subset](https://mpdf.github.io/css-stylesheets/supported-css.html):
-no flexbox/grid, no `calc()`, no `::before`, limited selectors. Use tables or floats
+no flexbox/grid, no `calc()`, no `::before`, limited selectors.
+Named page sizes in `@page` (`size: A4`, `size: A4 landscape`), as written for
+browsers, are rewritten to mPDF's `sheet-size: A4` / `A4-L`. Use tables or floats
 for columns and mPDF's page features for page furniture:
 
 ```html

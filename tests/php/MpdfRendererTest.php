@@ -94,4 +94,24 @@ class MpdfRendererTest extends SapphireTest
             $response->getHeader('Content-Disposition')
         );
     }
+
+    public function testNamedPageSizesBecomeSheetSizes(): void
+    {
+        $renderer = MpdfRenderer::create();
+        $this->assertSame('@page { sheet-size: A4; margin: 2cm; }', $renderer->namedPageSizes('@page { size: A4; margin: 2cm; }'));
+        $this->assertSame('@page :first{sheet-size: A5-L}', $renderer->namedPageSizes('@page :first{size: landscape a5}'));
+        $this->assertSame('@page { size: 210mm 297mm; }', $renderer->namedPageSizes('@page { size: 210mm 297mm; }'));
+        $this->assertSame('@page { size: landscape; }', $renderer->namedPageSizes('@page { size: landscape; }'));
+        $this->assertSame('p { font-size: 10pt; }', $renderer->namedPageSizes('p { font-size: 10pt; }'));
+    }
+
+    public function testNamedPageSizeRendersOnePage(): void
+    {
+        MpdfRenderer::config()->set('css', []);
+        $pdf = MpdfRenderer::create()->renderHtml(
+            '<html><head><style>@page { size: A4; margin: 20mm; }</style></head><body><p>Hallo</p></body></html>'
+        );
+
+        $this->assertMatchesRegularExpression('#/Count 1\b#', $pdf);
+    }
 }

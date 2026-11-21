@@ -1,0 +1,24 @@
+{
+    "name": "atwx/silverstripe-mpdf",
+    "description": "Render Silverstripe templates to PDF with mPDF: configurable profiles, fonts, CSS, letterhead paper and PDF responses",
+    "type": "silverstripe-vendormodule",
+    "keywords": ["silverstripe", "pdf", "mpdf"],
+    "license": "BSD-3-Clause",
+    "require": {
+        "php": "^8.3",
+        "silverstripe/framework": "^6.0",
+        "mpdf/mpdf": "^8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Atwx\\Mpdf\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Atwx\\Mpdf\\Tests\\": "tests/php/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

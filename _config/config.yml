@@ -1,0 +1,6 @@
+---
+Name: atwx-mpdf
+---
+SilverStripe\Core\Injector\Injector:
+  Atwx\Mpdf\PdfRenderer:
+    class: Atwx\Mpdf\MpdfRenderer

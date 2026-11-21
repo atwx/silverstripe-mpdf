@@ -88,7 +88,7 @@ any file (also outside the public folder). `<base>` tags are removed.
 
 `MpdfRenderer` is `Extensible`: `updateOptions(&$options)`, `updateMpdfConfig(&$config, $options)`,
 `updateMpdf($mpdf, $options)`, `updateHtml(&$html, $options)`, `updatePdf(&$pdf, $options, $mpdf)`.
-[atwx/silverstripe-mpdf-zugferd](https://github.com/atwx/silverstripe-mpdf-zugferd) uses `updatePdf`.
+[atwx/silverstripe-zugferd](https://github.com/atwx/silverstripe-zugferd) uses `updatePdf`.
 For special cases `createMpdf($renderer->resolveOptions([...]))` returns the configured
 `Mpdf` instance. Swap the engine by binding another `PdfRenderer` in Injector.
 
